@@ -115,7 +115,7 @@ flights %>%
     In your narrative mention the names of the airlines as well.
     *Hint:* You can use the `airlines` dataset to look up the airline name based on `carrier` code.
 
-***The airlines that have the most flights departing from NYC airports in 2013 are United Airlines(UA), JetBlue(B6), and ExpressJet Airlines(EV). For this code chunk I used the count function, so it would properly organize the chart, then I imputed the name for number of flights per airline. This way it would be a simple chart to just show me the number of flights that departed from NYC in 2013.***
+***The airlines that have the most flights departing from NYC airports in 2013 are United Airlines(UA), JetBlue(B6), and ExpressJet Airlines(EV). For this code chunk the count function was used, so it would properly organize the chart, then I imputed the name for number of flights per airline. This way it would be a simple chart to just show me the number of flights that departed from NYC in 2013.***
 
 
 inner_join(flights,airlines) %>% 
@@ -138,7 +138,7 @@ flights %>%
 
     a\.
     Which carrier had the highest mean arrival delay?
-***The carrier with the highest mean arrival delay was Frontier Airlines with a delay of 21.9. In this chunk I used a code that would look through the entire dataset for the airline with the highest mean arrival delay. This just made it easier so I didnt have to search through the dataset for the airline.***
+***The carrier with the highest mean arrival delay was Frontier Airlines with a delay of 21.9.This chunk uses a code that would look through the entire dataset for the airline with the highest mean arrival delay. This just made it easier so I didnt have to search through the dataset for the airline.***
 
 
 flights %>%
@@ -155,17 +155,35 @@ flights %>%
 4.  **Question 4 (10 points)** - What was the mean temperature at the origin airport on the day with the highest departure delay?
     Your answer should include the name of origin airport, the date with the highest departure delay, and the mean temperature on that day.
 
+***The temperature at the origin airport on the day with the highest departure delay was 42.1 degrees at Newark, New Jersey (EWR).***
 
-
-
+worst_day <-flights %>% 
+  group_by(year,month,day) %>%
+  summarise(max_dep_delay=max(dep_delay,na.rm=TRUE)) %>% 
+  arrange(desc(max_dep_delay)) %>% 
+  ungroup() %>% 
+  slice_head(n = 1)
 
 5.  **Question 5 (15 points)** - Consider breaking the day into four time intervals: 12:01am-6am, 6:01am-12pm, 12:01pm-6pm, 6:01pm-12am.
+
+
+flights_intervals %>% 
+  group_by(interval) %>% 
+  count(delayed_more_2h=dep_delay > 120) %>%
+   add_count(interval, wt = n,
+            name = "fligths_interval") %>% 
+    mutate(prop = n/fligths_interval*100) %>% 
+  drop_na()
 
     a\.
     Calculate the proportion of flights that are delayed at departure at each of these time intervals.
 
+***For the first interval, the preportion of flights delayed is 7.1%, for the second it is .5%, the third is 1.8% and the forth is 8.1%. For this code chunk I wanted the highest and lowest delay to be shown. For the ones that were delayed, it is more than a 2 hour delay.***
+
     b\.
     Comment on how the likelihood of being delayed change throughout the day?
+
+***The likelihood of being delayed changes throughout the day probably depends most on the time of day because I can imagine that the airspace is more crouded at certain parts of the day.***
 
 6.  **Question 6 (15 points)** - Find the flight with the longest air time.
 
