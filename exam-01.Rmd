@@ -187,14 +187,24 @@ flights_intervals %>%
 
 6.  **Question 6 (15 points)** - Find the flight with the longest air time.
 
+
+longest_distance<-flights %>% arrange( desc(distance)) %>% 
+  slice_head(n=1) %>% pull(distance)
+longest_destination<-flights %>% arrange( desc(distance)) %>% 
+  slice_head(n=1) %>% pull(dest)
+longest_origin<-flights %>% arrange( desc(distance)) %>% 
+  slice_head(n=1) %>% pull(origin)
+longest_seats <- inner_join(flights,planes, by="tailnum") %>% filter(tailnum=="N380HA") %>% pull(seats) %>% unique()
+
     a\.
     How long is this flight?
-
+***This flight is 4,983 miles.***
     b\.
     What city did it fly to?
-
+***It flew to HNL.***
     c\.
     How many seats does the plane that flew this flight have?
+***The plane that flew this flight has 377 seats.***
 
 7.  **Question 7 (15 pts)** - The `airports` data frame contains information on a large number of primarily American airports.
     These data include location information for these airports in the form of latitude and longitude coordinates.
