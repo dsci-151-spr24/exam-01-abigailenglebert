@@ -96,6 +96,9 @@ The main data is in the `flights` data frame, but there are additional data sets
 
 ## Questions
 
+***PLEASE NOTE that for all of the questions I had to remove ```{r} after viewing the data in order to properly knit, commit, and push the document. I have no idea why it wont work propperly.***
+
+
 1.  **Question 1 (10 points)** - What are the ten most common destinations for flights from NYC airports in 2013?
     Make a table that lists these in descending order of frequency and shows the number of fligts heading to each airport.
 
@@ -210,18 +213,79 @@ longest_seats <- inner_join(flights,planes, by="tailnum") %>% filter(tailnum=="N
     These data include location information for these airports in the form of latitude and longitude coordinates.
     In this question we limit our focus to the [Contiguous United States](https://en.wikipedia.org/wiki/Contiguous_United_States).
     Visualize and describe the distribution of the longitudes of airports in the Contiguous United States.
+    
+flights_latlon <- flights %>%
+    inner_join(select(airports, origin = faa, origin_lat = lat, origin_lon = lon),
+               by = "origin"
+    ) %>%
+    right_join(select(airports, dest = faa, dest_lat = lat, dest_lon = lon,tzone),
+               by = "dest"
+    )
+
+ flights_latlon %>%
+    filter(!tzone%in% c("Pacific/Honolulu","America/Anchorage"))  %>% 
+   
+    ggplot(aes(
+        x = origin_lon, xend = dest_lon,
+        y = origin_lat, yend = dest_lat
+    )) +
+    borders("state") +
+    geom_segment(arrow = arrow(length = unit(0.1, "cm"))) +
+    coord_quickmap() +
+    labs(y = "Latitude", x = "Longitude")
+ 
     What does this tell you about the geographical distribution of these airports?
+***There is more airports on the coast rather than in the middle of the country. My source was the wiki article.***
+
     *Hint:* You will first need to limit your analysis to the Contiguous United States.
     [This Wikipedia article](https://en.wikipedia.org/wiki/List_of_extreme_points_of_the_United_States) can help, but you're welcomed to use other resources as well.
     Make sure to cite whatever resource you use.
 
 8.  **Question 8 (15 pts)** - Recreate the plot included below using the `flights` data.
+
+
+flights %>% 
+  filter(month == 12, dest %in% c("PHL", "RDU")) %>% 
+  mutate(arrival = ifelse(arr_delay > 0, "delayed", "ontime")) %>%
+  filter(!is.na(arrival)) %>%
+  ggplot(aes(x = arrival, y = dep_delay, color = dest)) + 
+    geom_boxplot() + 
+    facet_grid(dest ~ origin) + 
+    labs(title = "On time performance of NYC flights",
+         subtitle = "December 2013",
+         x = "Arrival",
+         y = "Departure delay",
+         color = "Destination")
+
     Once you have created the visualization, in no more than one paragraph, describe what you think the point of this visualization might be.
     *Hint:* The visualization uses the variable `arrival`, which is not included in the `flights` data frame.
     You will have to create `arrival` yourself, it is a categorical variable that is equal to `"ontime"` when `arr_delay <= 0` and `"delayed"` when `arr_delay > 0`.
+    
+***The point of this visualization is to show the highest amount of delay for the destinations.***
 
 ![](img/plot-to-recreate.png)
 
 **Extra Credit (5 pts)** - Create a visualization that effectively shows if there is a relationship between the average daily departure delay and the average daily temperature for all three New York city airports.
 Your answer must be given in a single pipe.
 (You should only spend time on this question once you have finished answering the others)
+
+***This code shows a few ggplots for 3 airlines showing the average delay times and average temperature for those delay times.***
+
+
+
+flights_weather <- inner_join(flights, weather, by = c("year", "month", "day", "origin",
+                                                       "hour")) %>%
+  group_by(month, day, origin) %>%
+  summarise(avg_dep_delay = mean(dep_delay, na.rm = TRUE),
+            avg_temp = mean(temp, na.rm = TRUE))
+
+ggplot(flights_weather, aes(x = avg_temp, y = avg_dep_delay)) +
+  geom_point(alpha = 0.5) +
+  facet_wrap(~ origin) +
+  labs(x = "Average Temperature", y = "Average Delay (min)")
+
+
+***Online Sources:
+https://rpubs.com/mariadermit/exam-01
+https://www2.stat.duke.edu/courses/Spring18/Sta199/exam/midterm-01-post.html***
+
