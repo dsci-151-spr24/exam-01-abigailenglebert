@@ -99,22 +99,65 @@ The main data is in the `flights` data frame, but there are additional data sets
 1.  **Question 1 (10 points)** - What are the ten most common destinations for flights from NYC airports in 2013?
     Make a table that lists these in descending order of frequency and shows the number of fligts heading to each airport.
 
+***The ten most common destinations for flights from NYC airports in 2013 are ORD, ATL, LAX, BOS, MCO, CLT, SFO, FLL, MIA and DCA. For the first code chunk I just wanted to be able to view the dataset, and for the second code chunk I used the information from said dataset and had it organized and sorted for the highest number of flights per destination.***
+
+{r view-data}
+View(flights)
+
+
+
+flights %>% 
+  count(dest, name="number_flights_dest", sort = TRUE)
+
+
 2.  **Question 2 (10 points)** - Which airlines have the most flights departing from NYC airports in 2013?
     Make a table that lists these in descending order of frequency and shows the number of flights for each airline.
     In your narrative mention the names of the airlines as well.
     *Hint:* You can use the `airlines` dataset to look up the airline name based on `carrier` code.
 
+***The airlines that have the most flights departing from NYC airports in 2013 are United Airlines(UA), JetBlue(B6), and ExpressJet Airlines(EV). For this code chunk I used the count function, so it would properly organize the chart, then I imputed the name for number of flights per airline. This way it would be a simple chart to just show me the number of flights that departed from NYC in 2013.***
+
+
+inner_join(flights,airlines) %>% 
+  count(name, name="number_flights_airline", sort = TRUE)
+
+
 3.  **Question 3 (10 points)** - Consider only flights that have non-missing arrival delay information.
     Your answer should include the name of the carrier in addition to the carrier code and the values asked.
 
+{r view-data}
+View(airlines)
+
+
+flights %>%
+    group_by(carrier) %>%
+    summarise(delay = mean(arr_delay, na.rm = TRUE)) %>%
+    inner_join(airlines) %>% arrange(desc(delay)) %>% 
+    slice_head(n = 1)
+
+
     a\.
     Which carrier had the highest mean arrival delay?
+***The carrier with the highest mean arrival delay was Frontier Airlines with a delay of 21.9. In this chunk I used a code that would look through the entire dataset for the airline with the highest mean arrival delay. This just made it easier so I didnt have to search through the dataset for the airline.***
+
+
+flights %>%
+    group_by(carrier) %>%
+    summarise(delay = mean(arr_delay, na.rm = FALSE)) %>%
+    inner_join(airlines) %>% arrange(desc(delay)) %>% 
+    slice_head(n = 1)
+
 
     b\.
     Which carrier had the lowest mean arrival delay?
+***The carrier with the lowest mean arrival delay was Hawaiian Airlines Inc. with a delay of -6.9. I used the same code that I used for the first part of this question, I just changed TRUE to FALSE so it would give me the lowest mean arrival delay.***
 
 4.  **Question 4 (10 points)** - What was the mean temperature at the origin airport on the day with the highest departure delay?
     Your answer should include the name of origin airport, the date with the highest departure delay, and the mean temperature on that day.
+
+
+
+
 
 5.  **Question 5 (15 points)** - Consider breaking the day into four time intervals: 12:01am-6am, 6:01am-12pm, 12:01pm-6pm, 6:01pm-12am.
 
