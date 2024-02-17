@@ -235,7 +235,7 @@ flights_latlon <- flights %>%
     labs(y = "Latitude", x = "Longitude")
  
     What does this tell you about the geographical distribution of these airports?
-***There is more airports on the coast rather than in the middle of the country. My source was the wiki article.***
+***There is more airports on the coast rather than in the middle of the country. My source was the wiki article and the websites cited at the end of the article.***
 
     *Hint:* You will first need to limit your analysis to the Contiguous United States.
     [This Wikipedia article](https://en.wikipedia.org/wiki/List_of_extreme_points_of_the_United_States) can help, but you're welcomed to use other resources as well.
